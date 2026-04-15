@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="CoopEnergie — Prototype blockchain interactif. Coopératives solaires transparentes. MIABE Hackathon 2026."/>
+<title>CoopEnergie ⛓ Blockchain Prototype · MIABE 2026</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+<!-- Styles (CSS séparé) -->
+<link rel="stylesheet" href="css/main.css"/>
+<link rel="stylesheet" href="css/components.css"/>
+</head>
+<body>
+
+<!-- ═══════════ AMBIENT BACKGROUND ═══════════ -->
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="bg-glow bg-glow-1" aria-hidden="true"></div>
+<div class="bg-glow bg-glow-2" aria-hidden="true"></div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" role="navigation" aria-label="Navigation principale">
+    <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Ouvrir/fermer le menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-nav" id="sidebar-nav"></div>
+    <div class="sidebar-footer">
+      <div class="sf-label">HackForce · Groupe 19</div>
+      <div style="font-size:.65rem;color:var(--tx-4);margin-top:2px">MIABE 2026</div>
+    </div>
+  </aside>
+
+  <!-- HEADER -->
+  <header id="header" role="banner">
+    <div class="header-logo">
+      <div class="header-logo-mark" aria-hidden="true">☀</div>
+      <div class="header-logo-name">Coop<span>Énergie</span></div>
+    </div>
+    <div class="header-sep" aria-hidden="true"></div>
+    <div class="header-title" id="header-title">Dashboard</div>
+    <div class="header-right">
+      <div class="header-live-badge">
+        <div class="live-dot" aria-hidden="true"></div>
+        Blockchain Live
+      </div>
+      <div class="header-block-counter" id="header-block-count">Blocs : <span>1</span></div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main id="main" role="main">
+
+    <!-- ══════════════════════════════════
+         PAGE 0 — DASHBOARD
+    ══════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-tag tag-emerald"><div class="live-dot" style="width:6px;height:6px"></div> Tableau de bord en direct</div>
+        <h1 class="page-title">Groupe Lumière Nkolbisson</h1>
+        <p class="page-sub">Coopérative solaire sur blockchain · Yaoundé, Cameroun · Objectif : 250 000 FCFA · 8 membres</p>
+      </div>
+
+      <!-- KPIs -->
+      <div class="dash-kpi-row" role="region" aria-label="Indicateurs clés">
+        <div class="kpi-card" style="--kpi-color:var(--emerald)">
+          <div class="kpi-icon">⛓</div>
+          <div class="kpi-val" id="kpi-blocks">1</div>
+          <div class="kpi-label">Blocs minés<br>sur blockchain</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--solar)">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-val" id="kpi-collecte">0</div>
+          <div class="kpi-label">FCFA collectés<br>immuables</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--sapphire)">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-val" id="kpi-pct">0%</div>
+          <div class="kpi-label">Objectif<br>atteint</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--violet)">
+          <div class="kpi-icon">🗳</div>
+          <div class="kpi-val" id="kpi-votes">0</div>
+          <div class="kpi-label">Votes enregistrés<br>sur blockchain</div>
+        </div>
+        <div class="kpi-card" style="--kpi-color:var(--ruby)">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-val" id="kpi-members">0</div>
+          <div class="kpi-label">Membres<br>actifs</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.3fr .7fr;gap:20px;margin-top:20px">
+
+        <!-- Blockchain live feed -->
+        <div>
+          <div class="bc-feed">
+            <div class="bc-feed-header">
+              <div class="live-dot"></div>
+              <span class="bc-feed-title">Flux blockchain en direct</span>
+              <span style="font-size:.72rem;color:var(--tx-3);margin-left:auto;font-family:var(--font-mono)">Polygon Testnet</span>
+            </div>
+            <div class="bc-feed-body" id="feed-body"></div>
+          </div>
+
+          <!-- Progress -->
+          <div class="card mt-20">
+            <div class="card-header">
+              <span>📈</span>
+              <span class="card-title">Progression vers l'objectif</span>
+              <span class="card-badge" style="background:var(--solar-dim);color:var(--solar)">250 000 FCFA</span>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span class="progress-label">Fonds collectés</span>
+                <span class="progress-pct text-solar" id="dash-prog-pct">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="dash-prog-fill" style="width:0%"></div>
+              </div>
+              <div class="progress-note" id="dash-prog-note">Aucune cotisation enregistrée</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Members + coop info -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="coop-summary">
+            <div class="coop-name-row">
+              <div class="coop-avatar">🌞</div>
+              <div>
+                <div class="coop-name">Groupe Lumière Nkolbisson</div>
+                <div class="coop-sub">Yaoundé · 8 membres · Smart Contract actif</div>
+              </div>
+            </div>
+            <div class="member-list" id="member-list"></div>
+          </div>
+
+          <!-- Integrity check -->
+          <div class="card card-sm">
+            <div class="card-header" style="margin-bottom:10px;padding-bottom:10px">
+              <span>🔐</span>
+              <span class="card-title">Intégrité blockchain</span>
+            </div>
+            <div id="integrity-status">
+              <span style="color:var(--emerald);font-size:.85rem;font-weight:700">✓ Chaîne intègre</span>
+              <span style="font-size:.75rem;color:var(--tx-3);margin-top:2px;display:block">Bloc genesis créé — vérification automatique</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PAGE 1 — COTISATIONS
+    ══════════════════════════════════ -->
+    <div class="page" id="page-cotisations">
+      <div class="page-header">
+        <div class="page-tag tag-emerald">💰 Traçabilité des cotisations</div>
+        <h1 class="page-title">Enregistrer une cotisation</h1>
+        <p class="page-sub">Chaque paiement est hashé cryptographiquement, horodaté et chaîné au bloc précédent. Immuable, vérifiable, infalsifiable.</p>
+      </div>
+
+      <div class="cot-layout">
+        <!-- Formulaire gauche -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <div class="live-dot"></div>
+              <span class="card-title">Nouvelle cotisation</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Membre qui cotise</label>
+              <div class="chip-group" id="cot-members"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Montant (FCFA)</label>
+              <input class="form-input" type="number" id="cot-amount" value="25000" min="1000" max="500000" step="1000" placeholder="Ex: 25000"/>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Mode de paiement</label>
+              <div class="chip-group" id="cot-pay"></div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Note (optionnel)</label>
+              <input class="form-input" type="text" id="cot-note" placeholder="Ex: Cotisation mois de janvier 2026"/>
+            </div>
+
+            <button class="btn btn-emerald btn-full mt-8" id="cot-submit-btn" onclick="submitCotisation()">
+              ⛓ Enregistrer sur blockchain
+            </button>
+          </div>
+
+          <!-- Terminal aperçu bloc -->
+          <div class="terminal mt-16">
+            <div class="terminal-bar">
+              <div class="terminal-dot" style="background:#FF5F57"></div>
+              <div class="terminal-dot" style="background:#FFBD2E"></div>
+              <div class="terminal-dot" style="background:#28C840"></div>
+              <span class="terminal-label">Aperçu du bloc en construction</span>
+              <div class="live-dot" style="margin-left:auto;width:6px;height:6px"></div>
+            </div>
+            <div class="terminal-body">
+              <div><span class="t-key">bloc_num     </span>: <span class="t-hash" id="prev-num">#2</span></div>
+              <div><span class="t-key">prev_hash    </span>: <span class="t-prev" id="prev-hash">0x4f2a…c8b1</span></div>
+              <div><span class="t-key">data         </span>: <span class="t-val" id="prev-data">En attente...</span></div>
+              <div><span class="t-key">pay_mode     </span>: <span class="t-stamp" id="prev-pay">MTN Mobile Money</span></div>
+              <div><span class="t-key">timestamp    </span>: <span class="t-stamp" id="prev-time">—</span></div>
+              <div><span class="t-key">hash         </span>: <span class="t-hash" id="prev-hashval">[sera calculé]</span></div>
+              <div><span class="t-key">network      </span>: <span class="t-val">Polygon Testnet</span></div>
+              <div><span class="t-key">verified     </span>: <span class="t-val">✓ Automatique</span></div>
+            </div>
+          </div>
+
+          <!-- Stats row -->
+          <div class="grid-3 mt-16">
+            <div class="stat-box" style="--accent:var(--emerald)">
+              <div class="sb-val text-emerald" id="cs-total">0 FCFA</div>
+              <div class="sb-lbl">Total collecté</div>
+            </div>
+            <div class="stat-box" style="--accent:var(--solar)">
+              <div class="sb-val text-solar" id="cs-pct">0%</div>
+              <div class="sb-lbl">Objectif 250K</div>
+            </div>
+            <div class="stat-box" style="--accent:var(--sapphire)">
+              <div class="sb-val text-sapphire" id="cs-count">0</div>
+              <div class="sb-lbl">Cotisations</div>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div class="card mt-16">
+            <div class="progress-wrap">
+              <div class="progress-header">
+                <span class="progress-label">Progression</span>
+                <span class="progress-pct text-solar" id="cot-prog-pct-label">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="cot-prog-fill" style="width:0%"></div>
+              </div>
+              <div class="progress-note" id="cot-prog-note">Enregistrez une cotisation</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chaîne blockchain droite -->
+        <div class="chain-wrap">
+          <div class="chain-header">
+            <div class="live-dot"></div>
+            <span class="card-title">Chaîne de blocs — Cotisations</span>
+          </div>
+          <div class="chain-body" id="chain-body">
+            <div class="chain-empty">
+              <div class="ce-icon">⛓</div>
+              <div>Chaîne vide</div>
+              <div style="font-size:.8rem;margin-top:4px;color:var(--tx-4)">Enregistrez une cotisation</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PAGE 2 — VOTE
+    ══════════════════════════════════ -->
+    <div class="page" id="page-vote">
+      <div class="page-header">
+        <div class="page-tag tag-sapphire">🗳 Vote décentralisé sécurisé</div>
+        <h1 class="page-title">Voter pour l'équipement solaire</h1>
+        <p class="page-sub">Chaque vote est signé cryptographiquement. Un membre = une voix. Impossible de voter deux fois. Résultats publics, immuables, anti-manipulation.</p>
+      </div>
+
+      <div class="vote-layout">
+        <!-- Panneau gauche : options + formulaire vote -->
+        <div>
+          <div class="page-tag tag-sapphire" style="margin-bottom:10px;font-size:.7rem">Choisissez un équipement solaire</div>
+          <div id="vote-options"></div>
+
+          <div class="card mt-12">
+            <div class="card-header">
+              <div class="live-dot sapphire"></div>
+              <span class="card-title">Voter en tant que membre</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sélectionner votre identité</label>
+              <div class="chip-group" id="vote-voters"></div>
+            </div>
+            <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:10px 13px;font-size:.78rem;color:var(--tx-3);display:flex;gap:8px;margin-bottom:14px">
+              <span>🔒</span>
+              <span>Les membres <strong>grisés</strong> ont déjà voté. Un vote enregistré sur blockchain est <strong>définitif et inaltérable</strong>.</span>
+            </div>
+            <button class="btn btn-ghost btn-full" id="vote-btn" disabled onclick="submitVote()">
+              Sélectionnez un membre et une option
+            </button>
+          </div>
+        </div>
+
+        <!-- Panneau droit : résultats + ledger -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- Résultats live -->
+          <div class="card">
+            <div class="card-header">
+              <div class="live-dot sapphire"></div>
+              <span class="card-title">Résultats en direct</span>
+              <span class="card-badge badge-sapphire" id="total-votes-count">0 / 6 membres</span>
+            </div>
+            <div class="result-bar-item" style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:.82rem;font-weight:700">Option A — Jinko</span>
+                <span style="font-size:.82rem;font-weight:700;color:var(--emerald)" id="rpct-A">0%</span>
+              </div>
+              <div style="height:8px;background:var(--bg-5);border-radius:100px;overflow:hidden;margin-bottom:4px">
+                <div style="height:100%;border-radius:100px;background:var(--emerald);transition:width .7s var(--ease)" id="rfill-A"></div>
+              </div>
+              <div style="font-size:.72rem;color:var(--tx-3)" id="rcnt-A">0 vote</div>
+            </div>
+            <div class="result-bar-item" style="margin-bottom:12px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:.82rem;font-weight:700">Option B — Longi</span>
+                <span style="font-size:.82rem;font-weight:700;color:var(--sapphire)" id="rpct-B">0%</span>
+              </div>
+              <div style="height:8px;background:var(--bg-5);border-radius:100px;overflow:hidden;margin-bottom:4px">
+                <div style="height:100%;border-radius:100px;background:var(--sapphire);transition:width .7s var(--ease)" id="rfill-B"></div>
+              </div>
+              <div style="font-size:.72rem;color:var(--tx-3)" id="rcnt-B">0 vote</div>
+            </div>
+            <div class="result-bar-item">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:.82rem;font-weight:700">Option C — Victron</span>
+                <span style="font-size:.82rem;font-weight:700;color:var(--solar)" id="rpct-C">0%</span>
+              </div>
+              <div style="height:8px;background:var(--bg-5);border-radius:100px;overflow:hidden;margin-bottom:4px">
+                <div style="height:100%;border-radius:100px;background:var(--solar);transition:width .7s var(--ease)" id="rfill-C"></div>
+              </div>
+              <div style="font-size:.72rem;color:var(--tx-3)" id="rcnt-C">0 vote</div>
+            </div>
+
+            <!-- Winner banner -->
+            <div class="winner-banner" id="winner-banner">
+              <div class="wb-icon">🏆</div>
+              <div>
+                <div class="wb-title" id="winner-title">—</div>
+                <div class="wb-sub"   id="winner-sub">—</div>
+              </div>
+              <div class="wb-badge">⛓ Smart Contract déclenché</div>
+            </div>
+          </div>
+
+          <!-- Vote ledger -->
+          <div class="vote-ledger-wrap">
+            <div class="vl-header">
+              <div class="live-dot sapphire"></div>
+              <span class="card-title">Registre des votes blockchain</span>
+            </div>
+            <div class="vl-body" id="vote-ledger-body"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PAGE 3 — TRANSPARENCE
+    ══════════════════════════════════ -->
+    <div class="page" id="page-transparence">
+      <div class="page-header">
+        <div class="page-tag tag-emerald">🔍 Transparence totale garantie</div>
+        <h1 class="page-title">Audit blockchain public</h1>
+        <p class="page-sub">Toutes les transactions — cotisations, votes, décisions — sont visibles, vérifiables et inaltérables. Aucune opération ne peut être cachée ou modifiée.</p>
+      </div>
+
+      <div class="audit-layout">
+        <!-- Journal public -->
+        <div>
+          <div class="audit-wrap">
+            <div class="audit-header">
+              <div class="live-dot"></div>
+              <span class="card-title">Journal blockchain public</span>
+              <span class="card-badge badge-emerald" id="audit-count" style="margin-left:auto">0 entrées</span>
+            </div>
+            <div class="audit-search-row">
+              <input class="audit-search" type="text" placeholder="🔍 Rechercher par membre, hash, montant, type…" oninput="filterAudit(this.value)"/>
+            </div>
+            <div class="audit-list" id="audit-list-body"></div>
+          </div>
+
+          <!-- Integrity check card -->
+          <div class="card mt-16 card-sm">
+            <div class="card-header" style="margin-bottom:10px;padding-bottom:10px">
+              <span>🔐</span>
+              <span class="card-title">Vérification d'intégrité chaîne</span>
+            </div>
+            <div id="integrity-status">
+              <span style="color:var(--emerald);font-size:.85rem;font-weight:700">✓ Chaîne intègre</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smart contracts panel -->
+        <div class="sc-panel">
+          <!-- Code Solidity -->
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-dot" style="background:#FF5F57"></div>
+              <div class="code-dot" style="background:#FFBD2E"></div>
+              <div class="code-dot" style="background:#28C840"></div>
+              <span style="margin-left:6px">CoopEnergie.sol</span>
+              <span style="margin-left:auto;background:var(--emerald-dim);color:var(--emerald);padding:1px 7px;border-radius:4px;font-size:.65rem;font-weight:700">✓ Déployé · Polygon</span>
+            </div>
+            <div class="code-body sc-code-wrap">
+<span class="cmt">// SPDX-License-Identifier: MIT</span>
+<span class="kw">pragma solidity</span> <span class="num">^0.8.19</span>;
+
+<span class="kw">contract</span> <span class="fn">CoopEnergie</span> {
+  <span class="cmt">// ── État de la coopérative ──</span>
+  <span class="typ">uint256</span> <span class="kw">public</span> <span class="var">objectif</span>      = <span class="num">250_000</span>; <span class="cmt">// FCFA</span>
+  <span class="typ">uint256</span> <span class="kw">public</span> <span class="var">totalCollecte</span> = <span class="num">0</span>;
+  <span class="typ">uint8</span>   <span class="kw">public</span> <span class="var">quorum</span>        = <span class="num">4</span>; <span class="cmt">// sur 8 membres</span>
+  <span class="typ">bool</span>    <span class="kw">public</span> <span class="var">achatAutorise</span> = <span class="kw">false</span>;
+  <span class="typ">string</span>  <span class="kw">public</span> <span class="var">coopName</span>;
+
+  <span class="cmt">// ── Mappings immuables ──</span>
+  <span class="kw">mapping</span>(<span class="typ">address</span> => <span class="typ">uint256</span>) <span class="kw">public</span> <span class="var">contributions</span>;
+  <span class="kw">mapping</span>(<span class="typ">address</span> => <span class="typ">bool</span>)    <span class="kw">public</span> <span class="var">aVote</span>;
+  <span class="kw">mapping</span>(<span class="typ">uint8</span>   => <span class="typ">uint256</span>) <span class="kw">public</span> <span class="var">votesOption</span>;
+
+  <span class="cmt">// ── Événements on-chain ──</span>
+  <span class="kw">event</span> <span class="fn">CotisationEnregistree</span>(
+    <span class="typ">address indexed</span> membre,
+    <span class="typ">uint256</span> montant,
+    <span class="typ">uint256</span> timestamp
+  );
+  <span class="kw">event</span> <span class="fn">VoteEnregistre</span>(
+    <span class="typ">address indexed</span> votant,
+    <span class="typ">uint8</span> choix,
+    <span class="typ">uint256</span> timestamp
+  );
+  <span class="kw">event</span> <span class="fn">AchatAutorise</span>(<span class="typ">uint8</span> choixGagnant);
+
+  <span class="cmt">// ── Cotiser ──</span>
+  <span class="kw">function</span> <span class="fn">cotiser</span>() <span class="kw">external payable</span> {
+    <span class="kw">require</span>(msg.value > <span class="num">0</span>, <span class="str">"Montant nul"</span>);
+    contributions[msg.sender] += msg.value;
+    totalCollecte += msg.value;
+    <span class="kw">emit</span> <span class="fn">CotisationEnregistree</span>(
+      msg.sender, msg.value, block.timestamp
+    );
+    <span class="kw">if</span> (totalCollecte >= objectif) _verifierObjectif();
+  }
+
+  <span class="cmt">// ── Voter ──</span>
+  <span class="kw">function</span> <span class="fn">voter</span>(<span class="typ">uint8</span> choix) <span class="kw">external</span> {
+    <span class="kw">require</span>(!aVote[msg.sender], <span class="str">"Déjà voté"</span>);
+    <span class="kw">require</span>(choix <= <span class="num">2</span>, <span class="str">"Option invalide"</span>);
+    aVote[msg.sender] = <span class="kw">true</span>;
+    votesOption[choix]++;
+    <span class="kw">emit</span> <span class="fn">VoteEnregistre</span>(
+      msg.sender, choix, block.timestamp
+    );
+    _verifierQuorum();
+  }
+
+  <span class="cmt">// ── Vérifications automatiques ──</span>
+  <span class="kw">function</span> <span class="fn">_verifierObjectif</span>() <span class="kw">internal</span> {
+    <span class="kw">if</span> (totalCollecte >= objectif) {
+      achatAutorise = <span class="kw">true</span>;
+    }
+  }
+  <span class="kw">function</span> <span class="fn">_verifierQuorum</span>() <span class="kw">internal</span> {
+    <span class="typ">uint256</span> total = votesOption[<span class="num">0</span>] +
+      votesOption[<span class="num">1</span>] + votesOption[<span class="num">2</span>];
+    <span class="kw">if</span> (total >= quorum) {
+      <span class="typ">uint8</span> gagnant = _calculerGagnant();
+      <span class="kw">emit</span> <span class="fn">AchatAutorise</span>(gagnant);
+    }
+  }
+}
+            </div>
+          </div>
+
+          <!-- Triggers -->
+          <div>
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--tx-3);margin-bottom:10px;display:flex;align-items:center;gap:8px"><div class="live-dot" style="width:6px;height:6px"></div> Déclencheurs automatiques</div>
+            <div class="trigger-list">
+              <div class="trigger-item" id="trig-cot">
+                <div class="ti-row">
+                  <span class="ti-icon">💰</span>
+                  <span class="ti-name">onCotisation()</span>
+                  <span class="ti-status ts-idle" id="trig-cot-status">En attente</span>
+                </div>
+                <div class="ti-desc">Enregistrement blockchain, mise à jour tableau de bord, notification à tous les membres, vérification si objectif atteint.</div>
+              </div>
+              <div class="trigger-item" id="trig-vote">
+                <div class="ti-row">
+                  <span class="ti-icon">🗳</span>
+                  <span class="ti-name">onVote()</span>
+                  <span class="ti-status ts-idle" id="trig-vote-status">En attente</span>
+                </div>
+                <div class="ti-desc">Vote signé et enregistré. Anti-doublon vérifié. Quorum calculé automatiquement. Si ≥4 votes, gagnant déclaré.</div>
+              </div>
+              <div class="trigger-item" id="trig-quorum">
+                <div class="ti-row">
+                  <span class="ti-icon">🎯</span>
+                  <span class="ti-name">onQuorumAtteint()</span>
+                  <span class="ti-status ts-wait" id="trig-quorum-status">En cours</span>
+                </div>
+                <div class="ti-desc">Quand 4/6 votes exprimés, calcul automatique du gagnant. Résultat inaltérable, affiché publiquement.</div>
+              </div>
+              <div class="trigger-item" id="trig-obj">
+                <div class="ti-row">
+                  <span class="ti-icon">⚡</span>
+                  <span class="ti-name">onObjectifAtteint()</span>
+                  <span class="ti-status ts-wait" id="trig-obj-status">En cours</span>
+                </div>
+                <div class="ti-desc">Quand totalCollecte ≥ 250 000 FCFA, les fonds sont libérés automatiquement vers le fournisseur élu. Aucun admin ne peut bloquer.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PAGE 4 — RAPPORT
+    ══════════════════════════════════ -->
+    <div class="page" id="page-rapport">
+      <div class="page-header">
+        <div class="page-tag tag-solar">📄 Rapport automatique blockchain</div>
+        <h1 class="page-title">Rapport financier officiel</h1>
+        <p class="page-sub">Rapport généré automatiquement, signé blockchain, infalsifiable. Partageable avec ONG, fournisseurs, auditeurs et programmes d'électrification.</p>
+      </div>
+
+      <div class="rapport-layout">
+        <!-- Document rapport -->
+        <div class="report-doc" id="report-document">
+          <div class="report-doc-topbar">
+            <div class="report-doc-logo">☀ <span>CoopÉnergie</span> <span style="color:var(--tx-2);font-weight:400;font-size:.85rem">— Rapport officiel</span></div>
+            <div class="report-doc-meta">
+              Coopérative : Groupe Lumière Nkolbisson · Yaoundé, Cameroun<br>
+              Généré le : <span id="report-date">—</span><br>
+              Réseau blockchain : Polygon Testnet · Protocole : CoopEnergie v1.0
+            </div>
+          </div>
+
+          <div class="report-doc-body">
+            <div class="report-section">
+              <div class="report-sec-title">📊 Indicateurs financiers</div>
+              <div class="report-kpi-row">
+                <div class="rk"><div class="rk-val text-emerald" id="rk-collecte-val">—</div><div class="rk-lbl">FCFA collectés</div></div>
+                <div class="rk"><div class="rk-val text-solar"   id="rk-pct-val">—</div><div class="rk-lbl">Objectif atteint</div></div>
+                <div class="rk"><div class="rk-val text-sapphire"id="rk-members-val">—</div><div class="rk-lbl">Membres cotisants</div></div>
+              </div>
+            </div>
+
+            <div class="report-section">
+              <div class="report-sec-title">👥 Contributions détaillées</div>
+              <div id="report-contrib-list">
+                <div style="color:var(--tx-4);font-size:.8rem;padding:10px 0;text-align:center">Cliquez "Générer" pour afficher les contributions</div>
+              </div>
+            </div>
+
+            <div class="report-section">
+              <div class="report-sec-title">🗳 Décision d'achat collective</div>
+              <div class="report-decision">
+                <div class="rd-lbl">Résultat du vote blockchain</div>
+                <div class="rd-val" id="report-winner-val">—</div>
+                <div class="rd-sub" id="report-winner-sub">—</div>
+              </div>
+            </div>
+
+            <div class="report-section">
+              <div class="report-doc-meta" style="padding:12px;background:var(--bg-4);border-radius:var(--r-sm);margin-bottom:12px">
+                <strong style="color:var(--tx-1)">Progression financière</strong><br>
+                Total : <span id="rk-total-display">—</span> · Objectif : 250 000 FCFA · Complété à <span id="rk-pct-display">—</span>
+              </div>
+            </div>
+
+            <div class="report-seal">
+              <div class="rs-icon">🔏</div>
+              <div class="rs-text">
+                <div class="r1">Rapport signé blockchain · Hash : <span id="report-seal-hash">—</span></div>
+                <div class="r2">Généré le : <span id="report-seal-date">—</span> · Immuable et vérifiable publiquement</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contrôles droite -->
+        <div class="report-controls">
+          <!-- Big stats -->
+          <div class="grid-2">
+            <div class="stat-box" style="--accent:var(--emerald)">
+              <div class="sb-val text-emerald" id="rap-collecte">0 FCFA</div>
+              <div class="sb-lbl">Collecté</div>
+            </div>
+            <div class="stat-box" style="--accent:var(--solar)">
+              <div class="sb-val text-solar" id="rap-pct">0%</div>
+              <div class="sb-lbl">Objectif</div>
+            </div>
+            <div class="stat-box" style="--accent:var(--sapphire)">
+              <div class="sb-val text-sapphire" id="rap-blocks">0</div>
+              <div class="sb-lbl">Blocs minés</div>
+            </div>
+            <div class="stat-box" style="--accent:var(--violet)">
+              <div class="sb-val" style="color:var(--violet)" id="rap-votes">0/6</div>
+              <div class="sb-lbl">Votes</div>
+            </div>
+          </div>
+
+          <!-- Impact -->
+          <div class="card card-sm">
+            <div class="card-header" style="margin-bottom:12px;padding-bottom:10px">
+              <span>🌱</span>
+              <span class="card-title">Impact estimé</span>
+            </div>
+            <div class="impact-grid">
+              <div class="impact-card">
+                <div class="ic-icon">🏘</div>
+                <div class="ic-val text-emerald" id="rap-menages">—</div>
+                <div class="ic-lbl">Foyers électrifiés</div>
+              </div>
+              <div class="impact-card">
+                <div class="ic-icon">🌿</div>
+                <div class="ic-val text-emerald" id="rap-co2">—</div>
+                <div class="ic-lbl">CO₂ évité/an</div>
+              </div>
+              <div class="impact-card" style="grid-column:1/-1">
+                <div class="ic-icon">💰</div>
+                <div class="ic-val text-solar" id="rap-savings">—</div>
+                <div class="ic-lbl">Économies via achat groupé (−35% vs individuel)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <button class="btn btn-solar btn-full" onclick="generateRapport()">
+            📄 Générer le rapport officiel
+          </button>
+          <button class="btn btn-ghost btn-full" onclick="printReport()">
+            🖨 Imprimer / Exporter PDF
+          </button>
+
+          <div class="card card-sm" style="font-size:.8rem;color:var(--tx-3);line-height:1.65">
+            <strong style="color:var(--tx-2);display:block;margin-bottom:6px">⚠ À propos de ce rapport</strong>
+            La signature cryptographique garantit que ce rapport n'a pas été altéré après sa génération.
+            Il peut être vérifié par tout auditeur externe en recalculant le hash blockchain.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         PAGE 5 — À PROPOS / BLOCKCHAIN
+    ══════════════════════════════════ -->
+    <div class="page" id="page-about">
+      <div class="page-header">
+        <div class="page-tag tag-violet">⛓ Composante blockchain</div>
+        <h1 class="page-title">Comment la blockchain garantit la transparence</h1>
+        <p class="page-sub">Explication complète de l'architecture blockchain de CoopEnergie — comment les cotisations sont tracées, comment le vote est sécurisé, comment la transparence totale est garantie.</p>
+      </div>
+
+      <div class="about-layout">
+        <div>
+          <!-- Steps -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-header">
+              <span>🔗</span>
+              <span class="card-title">Fonctionnement de la chaîne de blocs</span>
+            </div>
+            <div class="explainer-steps">
+              <div class="exp-step">
+                <div class="exp-spine"><div class="exp-dot">1</div><div class="exp-line"></div></div>
+                <div class="exp-content">
+                  <div class="exp-title">Création du bloc genesis</div>
+                  <div class="exp-desc">À la création de la coopérative, un premier bloc inviolable est inscrit. Il contient le nom, l'objectif, les membres et les règles de vote. Ce bloc est la fondation immuable de toute la chaîne.</div>
+                  <div class="exp-code">Block #1 | type: GENESIS | prevHash: 0x000…000 | hash: 0x4f2a…c8b1</div>
+                </div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-spine"><div class="exp-dot">2</div><div class="exp-line"></div></div>
+                <div class="exp-content">
+                  <div class="exp-title">Chaque cotisation = un bloc immuable</div>
+                  <div class="exp-desc">Quand un membre cotise, un bloc est créé contenant son nom, le montant, le mode de paiement, un horodatage et le hash du bloc précédent. Modifier ce bloc invaliderait toute la chaîne.</div>
+                  <div class="exp-code">Block #N | data: {membre, montant, payMode} | prevHash: hash(N-1) | hash: sha256(data+prevHash)</div>
+                </div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-spine"><div class="exp-dot">3</div><div class="exp-line"></div></div>
+                <div class="exp-content">
+                  <div class="exp-title">Le vote est cryptographiquement sécurisé</div>
+                  <div class="exp-desc">Chaque vote est signé par la clé privée du membre et enregistré dans un bloc dédié. Le contrat vérifie que le membre n'a pas déjà voté (mapping aVote). Impossible de voter deux fois ou de modifier un vote.</div>
+                  <div class="exp-code">require(!aVote[msg.sender], "Déjà voté") → vote immuable</div>
+                </div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-spine"><div class="exp-dot">4</div><div class="exp-line"></div></div>
+                <div class="exp-content">
+                  <div class="exp-title">Smart contracts : automatisation sans intermédiaire</div>
+                  <div class="exp-desc">Les règles (quorum, objectif, libération des fonds) sont codées dans des smart contracts Solidity. Elles s'exécutent automatiquement dès que les conditions sont remplies. Aucun administrateur ne peut bloquer ni détourner.</div>
+                  <div class="exp-code">if (totalVotes >= quorum) → autoriserAchat() automatique</div>
+                </div>
+              </div>
+              <div class="exp-step">
+                <div class="exp-spine"><div class="exp-dot">5</div><div class="exp-line"></div></div>
+                <div class="exp-content">
+                  <div class="exp-title">Transparence totale pour tous les membres</div>
+                  <div class="exp-desc">Chaque membre peut vérifier l'intégrité complète de la chaîne depuis son téléphone. Le hash de chaque bloc est recalculable publiquement. Toute tentative de fraude est immédiatement détectable.</div>
+                  <div class="exp-code">hash(block_N) = sha256(data_N + prevHash_{N-1}) — public et vérifiable</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <!-- Equipe -->
+          <div class="card">
+            <div class="card-header">
+              <span>👥</span>
+              <span class="card-title">Équipe HackForce — Groupe 19</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:12px 14px;display:flex;gap:12px;align-items:center">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--emerald-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--emerald)">⛓</div>
+                <div><div style="font-size:.85rem;font-weight:700">TCHONANG GBETNKOM ROYCE DÉNIS</div><div style="font-size:.75rem;color:var(--tx-3)">Développeur Blockchain &amp; Architecte Web3</div></div>
+              </div>
+              <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:12px 14px;display:flex;gap:12px;align-items:center">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--solar-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--solar)">🎨</div>
+                <div><div style="font-size:.85rem;font-weight:700">MOGUE FLORETTE DIVINE GRÂCE</div><div style="font-size:.75rem;color:var(--tx-3)">Designer UI/UX &amp; Innovation sociale</div></div>
+              </div>
+              <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:12px 14px;display:flex;gap:12px;align-items:center">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--sapphire-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--sapphire)">☀</div>
+                <div><div style="font-size:.85rem;font-weight:700">DE FEUDJIO MARCEL JERRY</div><div style="font-size:.75rem;color:var(--tx-3)">Ingénieur Énergie Solaire &amp; Data</div></div>
+              </div>
+              <div style="background:var(--bg-3);border-radius:var(--r-sm);padding:12px 14px;display:flex;gap:12px;align-items:center">
+                <div style="width:36px;height:36px;border-radius:10px;background:var(--violet-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--violet)">💻</div>
+                <div><div style="font-size:.85rem;font-weight:700">FOPOSSI ALEX</div><div style="font-size:.75rem;color:var(--tx-3)">Développeur Full-Stack &amp; API Integration</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ODD -->
+          <div class="card">
+            <div class="card-header"><span>🌍</span><span class="card-title">Objectifs de Développement Durable</span></div>
+            <div class="odd-grid">
+              <div class="odd-badge" style="background:#FCC30B">
+                <span class="odd-num" style="color:#1a1a1a">ODD 7</span>
+                <span class="odd-lbl" style="color:#1a1a1a">Énergie propre</span>
+              </div>
+              <div class="odd-badge" style="background:#EB1C2D">
+                <span class="odd-num" style="color:white">ODD 1</span>
+                <span class="odd-lbl" style="color:rgba(255,255,255,.9)">Fin pauvreté</span>
+              </div>
+              <div class="odd-badge" style="background:#FD9D24">
+                <span class="odd-num" style="color:white">ODD 11</span>
+                <span class="odd-lbl" style="color:rgba(255,255,255,.9)">Villes durables</span>
+              </div>
+              <div class="odd-badge" style="background:#3F7E44">
+                <span class="odd-num" style="color:white">ODD 13</span>
+                <span class="odd-lbl" style="color:rgba(255,255,255,.9)">Climat</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hackathon info -->
+          <div class="card card-sm" style="background:linear-gradient(135deg,rgba(0,193,124,.06),rgba(245,166,35,.04))">
+            <div style="font-size:.78rem;color:var(--tx-3);line-height:1.75">
+              <div style="font-weight:700;color:var(--tx-1);margin-bottom:6px">🏆 MIABE Hackathon 2026</div>
+              Projet <strong>CM-02</strong> · Catégorie <strong>D10 Énergies renouvelables &amp; Microgrids</strong><br>
+              École Nationale Supérieure Polytechnique de Yaoundé<br>
+              Institut Universitaire Saint Jean · Année 2025–2026<br>
+              <a href="https://www.miabehackathon.com" target="_blank" style="color:var(--emerald);font-weight:600">www.miabehackathon.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════ MODAL ═══════════ -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+    <button class="modal-close" id="modal-close-btn" aria-label="Fermer">✕</button>
+    <div class="modal-title" id="modal-title"></div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══════════ TOASTS ═══════════ -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- ═══════════ JS (séparé) ═══════════ -->
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pages.js"></script>
+
+</body>
+</html>
